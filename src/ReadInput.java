@@ -112,7 +112,7 @@ public class ReadInput {
         while (sc.hasNextLine()) {
             String[] next = sc.nextLine().trim().split("   ");
             double[] thisRow = new double[width];
-            for (int i = 0; i < 395; i++) {
+            for (int i = 0; i < width; i++) {
                 thisRow[i] = Double.parseDouble(next[i]);
             }
             elevations[row] = thisRow;
