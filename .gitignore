@@ -84,6 +84,6 @@ nb-configuration.xml
 .DS_Store
 
 # all input files
-*.txt
+elevation.txt
 *.png
 *.jpg
