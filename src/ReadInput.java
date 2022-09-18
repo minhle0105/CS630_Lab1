@@ -1,9 +1,11 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.List;
 
 public class ReadInput {
     static class Node implements Comparable<Node> {
@@ -92,17 +94,18 @@ public class ReadInput {
         return false;
     }
 
-    public static void printPath(Node start, Node end) {
+    public static List<Node> printPath(Node end) {
         List<Node> paths = new ArrayList<>();
         Node curr = end;
-        while (curr.previousNode != start) {
+        while (curr.previousNode != null) {
             paths.add(curr);
             curr = curr.previousNode;
         }
-        paths.add(start);
+        paths.add(curr);
         for (int i = paths.size() - 1; i >= 0; i--) {
             System.out.println(paths.get(i).x + " " + paths.get(i).y);
         }
+        return paths;
     }
 
     public static void main(String[] args) throws Exception {
@@ -148,12 +151,18 @@ public class ReadInput {
                 }
             }
         }
-        int[] start = {350, 300};
-        int[] end = {352, 300};
+        int[] start = {150, 200};
+        int[] end = {340, 350};
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
-        printPath(startNode, endNode);
+        List<Node> path = printPath(endNode);
+        Color color = new Color(255, 192, 0); // Color white
+        int rgb = color.getRGB();
+        for (Node node : path) {
+            image.setRGB(node.x, node.y, rgb);
+        }
+        ImageIO.write(image, "png", new File("output.png"));
         sc.close();
     }
 }
