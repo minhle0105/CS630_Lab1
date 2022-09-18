@@ -2,12 +2,10 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
-public class ReadInput {
+public class Lab1 {
 
     static Map<String, Double> terrainCode;
     static class Node implements Comparable<Node> {
@@ -107,9 +105,6 @@ public class ReadInput {
             curr = curr.previousNode;
         }
         paths.add(curr);
-//        for (int i = paths.size() - 1; i >= 0; i--) {
-//            System.out.println(paths.get(i).x + " " + paths.get(i).y);
-//        }
         return paths;
     }
 
@@ -134,8 +129,9 @@ public class ReadInput {
         return red + "," + green + "," + blue + "";
     }
 
-//terrain-image, elevation-file, path-file, output-image-filename
     public static void main(String[] args) throws Exception {
+        final double LONGITUDE_PIXEL = 10.29;
+        final double LATITUDE_PIXEL = 7.55;
         terrainCode = new HashMap<>();
         terrainCode.put("248,148,18", 0.0);
         terrainCode.put("255,192,0", 0.5);
@@ -187,7 +183,8 @@ public class ReadInput {
                     int nextY = j + dC[k];
                     boolean isInBound = nextX >= 0 && nextX < height && nextY >= 0 && nextY < width;
                     if (isInBound) {
-                        thisNode.addNeighbor(Math.abs(thisNode.elevation - elevations[nextX][nextY]), nodes[nextX][nextY]);
+                        double pixelsInMeters = k == 2 | k == 3 ? LONGITUDE_PIXEL : LATITUDE_PIXEL;
+                        thisNode.addNeighbor(Math.abs(thisNode.elevation - elevations[nextX][nextY]) + pixelsInMeters, nodes[nextX][nextY]);
                     }
                 }
             }
@@ -207,7 +204,7 @@ public class ReadInput {
         findingPath(startNode, endNode);
         List<Node> path = trackPath(endNode);
         double totalDistance = calculateRealDistance(path);
-        Color color = new Color(255, 0, 195); // Color white
+        Color color = new Color(255, 0, 0);
         int rgb = color.getRGB();
         for (Node node : path) {
             image.setRGB(node.y, node.x, rgb);
