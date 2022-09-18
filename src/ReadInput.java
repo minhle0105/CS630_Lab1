@@ -105,14 +105,9 @@ public class ReadInput {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(new File("input.txt"));
         BufferedImage image = ImageIO.read(new File("img.png"));
-//        int color = image.getRGB(300, 400);
-//        int blue = color & 0xff;
-//        int green = (color & 0xff00) >> 8;
-//        int red = (color & 0xff0000) >> 16;
-//        System.out.println(image.getWidth());
-//        System.out.println(image.getHeight());
-//        System.out.println("(" + red + ", " + green + ", " + blue + ")");
-        double[][] elevations = new double[500][395];
+        int height = image.getHeight();
+        int width = image.getWidth();
+        double[][] elevations = new double[height][width];
         int row = 0;
         while (sc.hasNextLine()) {
             String[] next = sc.nextLine().trim().split("   ");
@@ -123,7 +118,7 @@ public class ReadInput {
             elevations[row] = thisRow;
             row++;
         }
-        Node[][] nodes = new Node[500][395];
+        Node[][] nodes = new Node[height][width];
         for (int i = 0; i < elevations.length; i++) {
             for (int j = 0; j < elevations[i].length; j++) {
                 Node node = new Node(i, j, elevations[i][j]);
@@ -138,15 +133,15 @@ public class ReadInput {
                 for (int k = 0; k < 4; k++) {
                     int nextX = i + dR[k];
                     int nextY = j + dC[k];
-                    boolean isInBound = nextX >= 0 && nextX < 500 && nextY >= 0 && nextY < 395;
+                    boolean isInBound = nextX >= 0 && nextX < height && nextY >= 0 && nextY < width;
                     if (isInBound) {
                         thisNode.addNeighbor(Math.abs(thisNode.elevation - elevations[nextX][nextY]), nodes[nextX][nextY]);
                     }
                 }
             }
         }
-        int[] start = {299, 199};
-        int[] end = {146, 105};
+        int[] start = {33, 24};
+        int[] end = {17, 17};
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
