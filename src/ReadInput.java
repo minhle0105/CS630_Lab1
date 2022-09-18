@@ -102,26 +102,29 @@ public class ReadInput {
 //        System.out.println(image.getWidth());
 //        System.out.println(image.getHeight());
 //        System.out.println("(" + red + ", " + green + ", " + blue + ")");
-        PrintWriter out = new PrintWriter(new FileWriter("elevation.txt", false), true);
-        int position = 0;
-        while (sc.hasNext()) {
-            String next = sc.next();
-            if (position > 394) {
-                if (position == 399) {
-                    out.write("\n");
-                    position = 0;
-                }
-                else {
-                    position++;
-                    continue;
-                }
+        double[][] elevations = new double[500][395];
+        int row = 0;
+        while (sc.hasNextLine()) {
+            String[] next = sc.nextLine().trim().split("   ");
+            double[] thisRow = new double[395];
+            for (int i = 0; i < 395; i++) {
+                thisRow[i] = Double.parseDouble(next[i]);
             }
-            else {
-                out.write(next + " ");
-                position++;
+            elevations[row] = thisRow;
+            row++;
+        }
+        Node[][] nodes = new Node[][];
+        for (int i = 0; i < elevations.length; i++) {
+            for (int j = 0; j < elevations[i].length; j++) {
+                Node node = new Node(i, j, elevations[i][j]);
+                nodes[i][j] = node;
             }
         }
-        out.close();
+        for (int i = 0; i < elevations.length; i++) {
+            for (int j = 0; j < elevations[i].length; j++) {
+                nodes[i][j].addNeighbor();
+            }
+        }
         sc.close();
     }
 }
