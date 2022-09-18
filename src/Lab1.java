@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 import java.util.List;
 
@@ -210,8 +211,10 @@ public class Lab1 {
             image.setRGB(node.y, node.x, rgb);
         }
         ImageIO.write(image, "png", new File(outputImage));
-        System.out.printf("Total Distance: %.3f meters.\n", totalDistance);
+        FileWriter fileWriter = new FileWriter("distance.txt", false);
+        fileWriter.write("Total Distance: " + totalDistance + " meters.\n");
         readPath.close();
+        fileWriter.close();
         sc.close();
     }
 }
