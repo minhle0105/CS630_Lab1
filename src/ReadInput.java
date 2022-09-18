@@ -111,7 +111,7 @@ public class ReadInput {
         int row = 0;
         while (sc.hasNextLine()) {
             String[] next = sc.nextLine().trim().split("   ");
-            double[] thisRow = new double[395];
+            double[] thisRow = new double[width];
             for (int i = 0; i < 395; i++) {
                 thisRow[i] = Double.parseDouble(next[i]);
             }
@@ -140,8 +140,8 @@ public class ReadInput {
                 }
             }
         }
-        int[] start = {33, 24};
-        int[] end = {17, 17};
+        int[] start = {236, 168};
+        int[] end = {222, 178};
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
