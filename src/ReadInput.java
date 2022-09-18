@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.List;
 
 public class ReadInput {
+
+    static Map<String, Double> terrainCode;
     static class Node implements Comparable<Node> {
         int x;
         int y;
@@ -27,6 +29,15 @@ public class ReadInput {
             this.neighbors = new ArrayList<>();
             this.fScore = Double.MAX_VALUE;
             this.gScore = Double.MAX_VALUE;
+        }
+
+        public void adjustFScore(String terrainColorCode) {
+            try {
+                this.fScore -= terrainCode.get(terrainColorCode);
+            }
+            catch (Exception ignored) {
+
+            }
         }
 
         @Override
@@ -88,7 +99,7 @@ public class ReadInput {
         return false;
     }
 
-    public static List<Node> printPath(Node end) {
+    public static List<Node> trackPath(Node end) {
         List<Node> paths = new ArrayList<>();
         Node curr = end;
         while (curr.previousNode != null) {
@@ -96,13 +107,46 @@ public class ReadInput {
             curr = curr.previousNode;
         }
         paths.add(curr);
-        for (int i = paths.size() - 1; i >= 0; i--) {
-            System.out.println(paths.get(i).x + " " + paths.get(i).y);
-        }
+//        for (int i = paths.size() - 1; i >= 0; i--) {
+//            System.out.println(paths.get(i).x + " " + paths.get(i).y);
+//        }
         return paths;
     }
+
+    private static double calculateRealDistance(List<Node> nodes) {
+        double res = 0.0;
+        for (Node node : nodes) {
+            Node prev = node.previousNode;
+            for (Edge edge : node.neighbors) {
+                if (edge.node == prev) {
+                    res += edge.weight;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    private static String convertRGB(int color) {
+        int blue = color & 0xff;
+        int green = (color & 0xff00) >> 8;
+        int red = (color & 0xff0000) >> 16;
+        return red + "," + green + "," + blue + "";
+    }
+
 //terrain-image, elevation-file, path-file, output-image-filename
     public static void main(String[] args) throws Exception {
+        terrainCode = new HashMap<>();
+        terrainCode.put("248,148,18", 0.0);
+        terrainCode.put("255,192,0", 0.5);
+        terrainCode.put("255,255,255", 0.0);
+        terrainCode.put("2,208,60", 0.4);
+        terrainCode.put("2,136,40", 0.3);
+        terrainCode.put("5,73,24", 0.6);
+        terrainCode.put("0,0,255", 0.8);
+        terrainCode.put("71,51,3", 0.1);
+        terrainCode.put("0,0,0", 0.2);
+        terrainCode.put("205,0,101", 0.0);
         String terrainImage = args[0];
         String elevationFile = args[1];
         String pathFile = args[2];
@@ -128,6 +172,8 @@ public class ReadInput {
         for (int i = 0; i < elevations.length; i++) {
             for (int j = 0; j < elevations[i].length; j++) {
                 Node node = new Node(i, j, elevations[i][j]);
+                String terrainCode = convertRGB(image.getRGB(j, i));
+                node.adjustFScore(terrainCode);
                 nodes[i][j] = node;
             }
         }
@@ -155,16 +201,20 @@ public class ReadInput {
         }
         int[] start = {pathData[1], pathData[0]};
         int[] end = {pathData[3], pathData[2]};
+
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
-        List<Node> path = printPath(endNode);
+        List<Node> path = trackPath(endNode);
+        double totalDistance = calculateRealDistance(path);
         Color color = new Color(255, 0, 195); // Color white
         int rgb = color.getRGB();
         for (Node node : path) {
             image.setRGB(node.y, node.x, rgb);
         }
         ImageIO.write(image, "png", new File(outputImage));
+        System.out.printf("Total Distance: %.3f meters.\n", totalDistance);
+        readPath.close();
         sc.close();
     }
 }
