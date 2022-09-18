@@ -42,7 +42,8 @@ public class ReadInput {
         public double calculateHeuristic(Node target) {
             double d1 = Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
             double d2 = Math.abs(this.elevation - target.elevation);
-            return Math.sqrt((d1 * d1) + (d2 * d2));
+            this.hScore = Math.sqrt((d1 * d1) + (d2 * d2));
+            return this.hScore;
         }
     }
 
@@ -61,35 +62,28 @@ public class ReadInput {
         PriorityQueue<Node> queue = new PriorityQueue<>();
         start.fScore = start.gScore + start.calculateHeuristic(dest);
         queue.add(start);
+        visited.add(start);
+        start.gScore = 0;
+        dest.hScore = 0;
         while (!queue.isEmpty()) {
-            Node thisNode = queue.peek();
+            Node thisNode = queue.remove();
+            visited.remove(thisNode);
             if (thisNode == dest) {
                 return true;
             }
             for (Edge edge : thisNode.neighbors) {
-                Node nextNode = edge.node;
+                Node neighbor = edge.node;
                 double totalWeight = thisNode.gScore + edge.weight;
-                if (!queue.contains(nextNode) && !visited.contains(nextNode)) {
-                    nextNode.previousNode = thisNode;
-                    nextNode.gScore = totalWeight;
-                    nextNode.fScore = nextNode.gScore + nextNode.calculateHeuristic(dest);
-                    queue.add(nextNode);
-                }
-                else {
-                    if (totalWeight < nextNode.gScore) {
-                        nextNode.previousNode = thisNode;
-                        nextNode.gScore = totalWeight;
-                        nextNode.fScore = nextNode.gScore + nextNode.calculateHeuristic(dest);
-                        if (visited.contains(nextNode)) {
-                            visited.remove(nextNode);
-                            queue.add(nextNode);
-                        }
+                if (totalWeight < neighbor.gScore) {
+                    neighbor.previousNode = thisNode;
+                    neighbor.gScore = totalWeight;
+                    neighbor.fScore = neighbor.gScore + neighbor.calculateHeuristic(dest);
+                    if (!visited.contains(neighbor)) {
+                        queue.add(neighbor);
+                        visited.add(neighbor);
                     }
                 }
             }
-
-            queue.remove(thisNode);
-            visited.add(thisNode);
         }
         return false;
     }
@@ -146,13 +140,13 @@ public class ReadInput {
                     int nextY = j + dC[k];
                     boolean isInBound = nextX >= 0 && nextX < 500 && nextY >= 0 && nextY < 395;
                     if (isInBound) {
-                        thisNode.addNeighbor(elevations[nextX][nextY], nodes[nextX][nextY]);
+                        thisNode.addNeighbor(Math.abs(thisNode.elevation - elevations[nextX][nextY]), nodes[nextX][nextY]);
                     }
                 }
             }
         }
-        int[] start = {150, 200};
-        int[] end = {340, 350};
+        int[] start = {299, 199};
+        int[] end = {146, 105};
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
