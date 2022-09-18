@@ -101,15 +101,19 @@ public class ReadInput {
         }
         return paths;
     }
-
+//terrain-image, elevation-file, path-file, output-image-filename
     public static void main(String[] args) throws Exception {
-        Scanner sc = new Scanner(new File("input.txt"));
-        BufferedImage image = ImageIO.read(new File("img.png"));
+        String terrainImage = args[0];
+        String elevationFile = args[1];
+        String pathFile = args[2];
+        String outputImage = args[3];
+        Scanner sc = new Scanner(new File(elevationFile));
+        BufferedImage image = ImageIO.read(new File(terrainImage));
         int height = image.getHeight();
         int width = image.getWidth();
         double[][] elevations = new double[height][width];
         int row = 0;
-        while (sc.hasNextLine()) {
+        while (sc.hasNext()) {
             double[] thisRow = new double[width];
             for (int col = 0; col < width; col ++) {
                 thisRow[col] = Double.parseDouble(sc.next());
@@ -142,18 +146,25 @@ public class ReadInput {
                 }
             }
         }
-        int[] start = {236, 168};
-        int[] end = {222, 178};
+        int[] pathData = new int[4];
+        int index = 0;
+        Scanner readPath = new Scanner(new File(pathFile));
+        while (readPath.hasNext()) {
+            pathData[index] = Integer.parseInt(readPath.next());
+            index++;
+        }
+        int[] start = {pathData[1], pathData[0]};
+        int[] end = {pathData[3], pathData[2]};
         Node startNode = nodes[start[0]][start[1]];
         Node endNode = nodes[end[0]][end[1]];
         findingPath(startNode, endNode);
         List<Node> path = printPath(endNode);
-        Color color = new Color(255, 192, 0); // Color white
+        Color color = new Color(255, 0, 195); // Color white
         int rgb = color.getRGB();
         for (Node node : path) {
-            image.setRGB(node.x, node.y, rgb);
+            image.setRGB(node.y, node.x, rgb);
         }
-        ImageIO.write(image, "png", new File("output.png"));
+        ImageIO.write(image, "png", new File(outputImage));
         sc.close();
     }
 }
