@@ -39,7 +39,7 @@ public class ReadInput {
 
         public double calculateHeuristic(Node target) {
             double d1 = Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
-            double d2 = Math.max(this.elevation, target.elevation);
+            double d2 = Math.abs(this.elevation - target.elevation);
             return Math.sqrt((d1 * d1) + (d2 * d2));
         }
     }
@@ -92,6 +92,19 @@ public class ReadInput {
         return false;
     }
 
+    public static void printPath(Node start, Node end) {
+        List<Node> paths = new ArrayList<>();
+        Node curr = end;
+        while (curr.previousNode != start) {
+            paths.add(curr);
+            curr = curr.previousNode;
+        }
+        paths.add(start);
+        for (int i = paths.size() - 1; i >= 0; i--) {
+            System.out.println(paths.get(i).x + " " + paths.get(i).y);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(new File("input.txt"));
         BufferedImage image = ImageIO.read(new File("img.png"));
@@ -113,18 +126,34 @@ public class ReadInput {
             elevations[row] = thisRow;
             row++;
         }
-        Node[][] nodes = new Node[][];
+        Node[][] nodes = new Node[500][395];
         for (int i = 0; i < elevations.length; i++) {
             for (int j = 0; j < elevations[i].length; j++) {
                 Node node = new Node(i, j, elevations[i][j]);
                 nodes[i][j] = node;
             }
         }
+        int[] dR = {1, -1, 0, 0};
+        int[] dC = {0, 0, 1, -1};
         for (int i = 0; i < elevations.length; i++) {
             for (int j = 0; j < elevations[i].length; j++) {
-                nodes[i][j].addNeighbor();
+                Node thisNode = nodes[i][j];
+                for (int k = 0; k < 4; k++) {
+                    int nextX = i + dR[k];
+                    int nextY = j + dC[k];
+                    boolean isInBound = nextX >= 0 && nextX < 500 && nextY >= 0 && nextY < 395;
+                    if (isInBound) {
+                        thisNode.addNeighbor(elevations[nextX][nextY], nodes[nextX][nextY]);
+                    }
+                }
             }
         }
+        int[] start = {350, 300};
+        int[] end = {352, 300};
+        Node startNode = nodes[start[0]][start[1]];
+        Node endNode = nodes[end[0]][end[1]];
+        findingPath(startNode, endNode);
+        printPath(startNode, endNode);
         sc.close();
     }
 }
