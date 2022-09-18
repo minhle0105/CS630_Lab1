@@ -110,10 +110,12 @@ public class ReadInput {
         double[][] elevations = new double[height][width];
         int row = 0;
         while (sc.hasNextLine()) {
-            String[] next = sc.nextLine().trim().split("   ");
             double[] thisRow = new double[width];
-            for (int i = 0; i < width; i++) {
-                thisRow[i] = Double.parseDouble(next[i]);
+            for (int col = 0; col < width; col ++) {
+                thisRow[col] = Double.parseDouble(sc.next());
+            }
+            for (int i = 0; i < 5; i++) {
+                sc.next();
             }
             elevations[row] = thisRow;
             row++;
