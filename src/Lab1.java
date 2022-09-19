@@ -98,14 +98,14 @@ public class Lab1 {
         return false;
     }
 
-    public static List<Node> trackPath(Node end) {
+    public static List<Node> trackPath(Node start, Node end) {
         List<Node> paths = new ArrayList<>();
         Node curr = end;
-        while (curr.previousNode != null) {
+        while (curr.previousNode != null && curr != start) {
             paths.add(curr);
             curr = curr.previousNode;
         }
-        paths.add(curr);
+        paths.add(start);
         return paths;
     }
 
@@ -190,26 +190,29 @@ public class Lab1 {
                 }
             }
         }
-        int[] pathData = new int[4];
-        int index = 0;
+
+        List<Node> pathData = new ArrayList<>();
         Scanner readPath = new Scanner(new File(pathFile));
         while (readPath.hasNext()) {
-            pathData[index] = Integer.parseInt(readPath.next());
-            index++;
+            int x = Integer.parseInt(readPath.next());
+            int y = Integer.parseInt(readPath.next());
+            pathData.add(nodes[y][x]);
         }
-        int[] start = {pathData[1], pathData[0]};
-        int[] end = {pathData[3], pathData[2]};
-
-        Node startNode = nodes[start[0]][start[1]];
-        Node endNode = nodes[end[0]][end[1]];
-        findingPath(startNode, endNode);
-        List<Node> path = trackPath(endNode);
-        double totalDistance = calculateRealDistance(path);
-        Color color = new Color(255, 0, 0);
+        Color color = new Color(255, 123, 0);
         int rgb = color.getRGB();
-        for (Node node : path) {
-            image.setRGB(node.y, node.x, rgb);
+        double totalDistance = 0.0;
+        for (int i = 0; i < pathData.size() - 1; i++) {
+            Node start = pathData.get(i);
+            Node end = pathData.get(i + 1);
+            findingPath(start, end);
+            List<Node> pathFound = trackPath(start, end);
+            double distance = calculateRealDistance(pathFound);
+            totalDistance += distance;
+            for (Node node : pathFound) {
+                image.setRGB(node.y, node.x, rgb);
+            }
         }
+
         ImageIO.write(image, "png", new File(outputImage));
         FileWriter fileWriter = new FileWriter("distance.txt", false);
         fileWriter.write("Total Distance: " + totalDistance + " meters.\n");
